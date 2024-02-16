@@ -37,7 +37,7 @@ const isDisabled = next.getAttribute("aria-disabled");
 if (isDisabled === "false") {
     next.click();
 } else {
-    setInterval(solve, 20);
+    setInterval(solve, 100);
 }
 
 
