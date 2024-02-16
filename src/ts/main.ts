@@ -4,8 +4,7 @@ import {
     DialogueChallenge,
     GapFillChallenge,
     ListenTapChallege,
-    TapCompleteChallenge,
-    TranslateChallenge
+    TapCompleteChallenge
 } from "./types/duolingo";
 import {sleep, tapCorrectWords} from "./util";
 
@@ -25,13 +24,6 @@ function solve() {
         throw new Error("Could not find react props")
     }
     switch (props?.currentChallenge.type) {
-        case "translate": {
-            const correctTokens = (props.currentChallenge as TranslateChallenge).correctTokens;
-
-            tapCorrectWords(correctTokens);
-
-            break;
-        }
         case "dialogue": {
             const correctIndex = (props.currentChallenge as DialogueChallenge).correctIndex;
             const next = document.querySelector('[data-test="player-next"]') as HTMLElement;
@@ -41,6 +33,7 @@ function solve() {
             choices[correctIndex].click();
             break;
         }
+        case "translate":
         case "listenTap": {
             const correctTokens = (props.currentChallenge as ListenTapChallege).correctTokens;
             tapCorrectWords(correctTokens);

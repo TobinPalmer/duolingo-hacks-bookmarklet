@@ -1,21 +1,5 @@
 import {ReactPropsOuter} from "./types/types";
 import {ReactPropsOuterWrapper} from "./types/duolingo";
-
-interface ReactElement extends HTMLElement {
-    _owner: {
-        stateNode: {
-            props: ReactPropsOuter
-        }
-    }
-}
-
-export function findSubReact(dom: HTMLElement) {
-    const key = Object.keys(dom).find(key => key.startsWith("__reactProps$")) ?? "";
-
-    // @ts-ignore
-    return dom.parentElement[key].children.props;
-}
-
 // This kindof recursivly looks up a subtree of elements and looks for something called __reactProps$RANDOMSTRING.
 // Then we basically go into the secret duolingo stuff that has the answer and return it.
 // The props contain a correct answer and a list of tokens that are the words in the answer.
