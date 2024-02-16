@@ -55,23 +55,24 @@ export interface AbstractBaseChallenge {
     type: DuolingoChallengeTypes;
 }
 
-export interface SelectChallenge extends AbstractBaseChallenge {
-    prompt: string
+export interface CorrectIndexChallenge extends AbstractBaseChallenge {
     correctIndex: number
+}
+
+export interface SelectChallenge extends CorrectIndexChallenge {
+    prompt: string
     newWords: any[]
 }
 
-export interface ReadComprehensionChallenge extends AbstractBaseChallenge {
+export interface ReadComprehensionChallenge extends CorrectIndexChallenge {
     passage: string
     passageTokens: PassageToken[]
     question: string
     questionTokens: QuestionToken[]
-    correctIndex: number
     tts: string
 }
 
-export interface GapFillChallenge extends AbstractBaseChallenge {
-    correctIndex: number
+export interface GapFillChallenge extends CorrectIndexChallenge {
     displayTokens: DisplayToken[]
     tokens: TokensEntity[]
     solutionTranslation: string
@@ -90,8 +91,7 @@ export interface QuestionToken {
     tts?: string
 }
 
-export interface SelectTranscriptionChallenge extends AbstractBaseChallenge {
-    correctIndex: number
+export interface SelectTranscriptionChallenge extends CorrectIndexChallenge {
     tts: string
 }
 
@@ -107,11 +107,10 @@ export interface ListenCompleteChallenge extends AbstractBaseChallenge {
     worldCharacterShown: boolean
 }
 
-export interface ListenIsolationChallenge extends AbstractBaseChallenge {
+export interface ListenIsolationChallenge extends CorrectIndexChallenge {
     blankRangeEnd: number
     blankRangeStart: number
     character: Character
-    correctIndex: number
     options: Option[]
     solutionTranslation: string
     tokens: TokensEntity[]
@@ -120,7 +119,7 @@ export interface ListenIsolationChallenge extends AbstractBaseChallenge {
     worldCharacterShown: boolean
 }
 
-export interface ListenTapChallege extends AbstractBaseChallenge {
+export interface ListenTapChallege extends CorrectIndexChallenge {
     prompt: string
     correctTokens: string[]
     wrongTokens: string[]
@@ -133,10 +132,9 @@ export interface ListenTapChallege extends AbstractBaseChallenge {
     sentenceId: string
 }
 
-export interface AssistChallenge extends AbstractBaseChallenge {
+export interface AssistChallenge extends CorrectIndexChallenge {
     character: Character
     prompt: string
-    correctIndex: number
     options: Option[]
     newWords: any[]
     worldCharacterShown: boolean
@@ -157,8 +155,7 @@ export interface CompleteReverseTranslationChallenge extends AbstractBaseChallen
     worldCharacterShown: boolean
 }
 
-export interface SelectOneChallenge extends AbstractBaseChallenge {
-    correctIndex: number;
+export interface SelectOneChallenge extends CorrectIndexChallenge {
     dialogue?: (DialogueEntity)[] | null;
     solutionTranslation: string;
 }
@@ -176,8 +173,7 @@ export interface TapCompleteChallenge extends AbstractBaseChallenge {
     newWords: any[]
 }
 
-export interface DialogueChallenge extends AbstractBaseChallenge {
-    correctIndex: number
+export interface DialogueChallenge extends CorrectIndexChallenge {
     dialogue: Dialogue[]
     solutionTranslation: string
 }

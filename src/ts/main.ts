@@ -1,13 +1,9 @@
 import {findReact} from "./reactUtils";
 import {
-    AssistChallenge,
     CompleteReverseTranslationChallenge,
     DialogueChallenge,
     GapFillChallenge,
-    ListenIsolationChallenge,
     ListenTapChallege,
-    ReadComprehensionChallenge,
-    SelectTranscriptionChallenge,
     TapCompleteChallenge,
     TranslateChallenge
 } from "./types/duolingo";
@@ -45,29 +41,16 @@ function solve() {
             choices[correctIndex].click();
             break;
         }
-        case "select": {
-            const correctIndex = (props.currentChallenge as DialogueChallenge).correctIndex;
-            const choices = document.querySelectorAll('[data-test="challenge-choice"]') as NodeListOf<HTMLElement>;
-            choices[correctIndex].click();
-            break;
-        }
-        case "assist": {
-            const correctIndex = (props.currentChallenge as AssistChallenge).correctIndex;
-            const choices = document.querySelectorAll('[data-test="challenge-choice"]') as NodeListOf<HTMLElement>;
-            choices[correctIndex].click();
-            break;
-        }
         case "listenTap": {
             const correctTokens = (props.currentChallenge as ListenTapChallege).correctTokens;
             tapCorrectWords(correctTokens);
             break;
         }
-        case "readComprehension" : {
-            const correctIndex = (props.currentChallenge as ReadComprehensionChallenge).correctIndex;
-            const choices = document.querySelectorAll('[data-test="challenge-choice"]') as NodeListOf<HTMLElement>;
-            choices[correctIndex].click();
-            break;
-        }
+        case "assist":
+        case "select":
+        case "readComprehension":
+        case "listenIsolation":
+        case "selectTranscription":
         case "gapFill": {
             const correctIndex = (props.currentChallenge as GapFillChallenge).correctIndex;
             const choices = document.querySelectorAll('[data-test="challenge-choice"]') as NodeListOf<HTMLElement>;
@@ -94,19 +77,6 @@ function solve() {
             });
             input.dispatchEvent(inputEvent);
 
-            break;
-        }
-        case "listenIsolation": {
-            const correctIndex = (props.currentChallenge as ListenIsolationChallenge).correctIndex;
-            const choices = document.querySelectorAll('[data-test="challenge-choice"]') as NodeListOf<HTMLElement>;
-            choices[correctIndex].click();
-            break;
-        }
-
-        case "selectTranscription": {
-            const correctIndex = (props.currentChallenge as SelectTranscriptionChallenge).correctIndex;
-            const choices = document.querySelectorAll('[data-test="challenge-choice"]') as NodeListOf<HTMLElement>;
-            choices[correctIndex].click();
             break;
         }
     }
