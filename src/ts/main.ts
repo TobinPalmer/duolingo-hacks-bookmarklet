@@ -3,34 +3,16 @@ import {
     AssistChallenge,
     CompleteReverseTranslationChallenge,
     DialogueChallenge,
+    GapFillChallenge,
+    ListenIsolationChallenge,
     ListenTapChallege,
+    ReadComprehensionChallenge,
     SelectTranscriptionChallenge,
     TapCompleteChallenge,
     TranslateChallenge
 } from "./types/duolingo";
+import {sleep, tapCorrectWords} from "./util";
 
-
-function getWordsMap(): [string, HTMLElement][] {
-    const wordBank = document.querySelector("[data-test=word-bank]") as HTMLElement;
-    const words: [string, HTMLElement][] = [];
-
-    for (let i = 0; i < wordBank.childElementCount; i++) {
-        words.push([wordBank.children[i].textContent ?? "", wordBank.children[i] as HTMLElement])
-    }
-
-    return words
-}
-
-function tapCorrectWords(correctTokens: string[]) {
-    const words = getWordsMap();
-    for (const token of correctTokens) {
-        const word = words.find(x => x[0] === token);
-        (word?.[1].querySelector("button") as HTMLElement).click()
-        words.splice(words.findIndex(x => x[0] === token), 1);
-    }
-}
-
-const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 const next = document.querySelector('[data-test="player-next"]') as HTMLElement;
 const isDisabled = next.getAttribute("aria-disabled");
@@ -80,6 +62,18 @@ function solve() {
             tapCorrectWords(correctTokens);
             break;
         }
+        case "readComprehension" : {
+            const correctIndex = (props.currentChallenge as ReadComprehensionChallenge).correctIndex;
+            const choices = document.querySelectorAll('[data-test="challenge-choice"]') as NodeListOf<HTMLElement>;
+            choices[correctIndex].click();
+            break;
+        }
+        case "gapFill": {
+            const correctIndex = (props.currentChallenge as GapFillChallenge).correctIndex;
+            const choices = document.querySelectorAll('[data-test="challenge-choice"]') as NodeListOf<HTMLElement>;
+            choices[correctIndex].click();
+            break;
+        }
         case "tapComplete": {
             const correctIndices = (props.currentChallenge as TapCompleteChallenge).correctIndices;
             const wordBank = document.querySelector('[data-test*="word-bank"]') as HTMLElement;
@@ -102,6 +96,13 @@ function solve() {
 
             break;
         }
+        case "listenIsolation": {
+            const correctIndex = (props.currentChallenge as ListenIsolationChallenge).correctIndex;
+            const choices = document.querySelectorAll('[data-test="challenge-choice"]') as NodeListOf<HTMLElement>;
+            choices[correctIndex].click();
+            break;
+        }
+
         case "selectTranscription": {
             const correctIndex = (props.currentChallenge as SelectTranscriptionChallenge).correctIndex;
             const choices = document.querySelectorAll('[data-test="challenge-choice"]') as NodeListOf<HTMLElement>;

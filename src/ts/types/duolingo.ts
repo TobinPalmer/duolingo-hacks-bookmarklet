@@ -25,6 +25,9 @@ export type AllChallenges =
     | CompleteReverseTranslationChallenge
     | SelectChallenge
     | SelectTranscriptionChallenge
+    | ListenIsolationChallenge
+    | GapFillChallenge
+    | ReadComprehensionChallenge
     | ListenCompleteChallenge;
 
 export type DuolingoChallengeTypes =
@@ -36,6 +39,9 @@ export type DuolingoChallengeTypes =
     | "completeReverseTranslation"
     | "assist"
     | "selectTranscription"
+    | "gapFill"
+    | "listenIsolation"
+    | "readComprehension"
     | "listenComplete";
 
 export interface AbstractBaseChallenge {
@@ -55,6 +61,35 @@ export interface SelectChallenge extends AbstractBaseChallenge {
     newWords: any[]
 }
 
+export interface ReadComprehensionChallenge extends AbstractBaseChallenge {
+    passage: string
+    passageTokens: PassageToken[]
+    question: string
+    questionTokens: QuestionToken[]
+    correctIndex: number
+    tts: string
+}
+
+export interface GapFillChallenge extends AbstractBaseChallenge {
+    correctIndex: number
+    displayTokens: DisplayToken[]
+    tokens: TokensEntity[]
+    solutionTranslation: string
+    isSpeakerUniversal: boolean
+    newWords: any[]
+}
+
+export interface PassageToken {
+    value: string
+    tts?: string
+    hintTable?: HintTable
+}
+
+export interface QuestionToken {
+    value: string
+    tts?: string
+}
+
 export interface SelectTranscriptionChallenge extends AbstractBaseChallenge {
     correctIndex: number
     tts: string
@@ -69,6 +104,19 @@ export interface ListenCompleteChallenge extends AbstractBaseChallenge {
     tts: string
     sentenceId: string
     prompt: string
+    worldCharacterShown: boolean
+}
+
+export interface ListenIsolationChallenge extends AbstractBaseChallenge {
+    blankRangeEnd: number
+    blankRangeStart: number
+    character: Character
+    correctIndex: number
+    options: Option[]
+    solutionTranslation: string
+    tokens: TokensEntity[]
+    tts: string
+    sentenceId: string
     worldCharacterShown: boolean
 }
 
