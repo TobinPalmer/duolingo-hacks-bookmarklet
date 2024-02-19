@@ -22,11 +22,16 @@ export type AllChallenges =
     | AssistChallenge
     | TapCompleteChallenge
     | ListenTapChallege
+    | ListenChallenge
     | CompleteReverseTranslationChallenge
     | SelectChallenge
+    | PartialReverseTranslateChallenge
+    | ListenComprehensionChallenge
     | SelectTranscriptionChallenge
     | ListenIsolationChallenge
     | GapFillChallenge
+    | TapClozeChallenge
+    | TypeClozeChallenge
     | ReadComprehensionChallenge
     | ListenCompleteChallenge;
 
@@ -36,10 +41,15 @@ export type DuolingoChallengeTypes =
     | "tapComplete"
     | "listenTap"
     | "select"
+    | "listen"
     | "completeReverseTranslation"
     | "assist"
     | "selectTranscription"
+    | "typeCloze"
+    | "listenComprehension"
     | "gapFill"
+    | "tapCloze"
+    | "partialReverseTranslate"
     | "listenIsolation"
     | "readComprehension"
     | "listenComplete";
@@ -57,6 +67,63 @@ export interface AbstractBaseChallenge {
 
 export interface CorrectIndexChallenge extends AbstractBaseChallenge {
     correctIndex: number
+}
+
+export interface TypeClozeChallenge extends AbstractBaseChallenge {
+    displayTokens: DisplayToken[]
+    tokens: TokensEntity[]
+    newWords: any[]
+    sentenceId: string
+    explanation: Explanation
+    indicatorType: string
+}
+
+export interface PartialReverseTranslateChallenge extends AbstractBaseChallenge {
+    prompt: string
+    displayTokens: DisplayToken[]
+    grader: Grader
+    weakWordPromptRanges: any[]
+    tokens: TokensEntity[]
+    tts: string
+    character: Character
+    isSpeakerUniversal: boolean
+    newWords: any[]
+    worldCharacterShown: boolean
+}
+
+export interface ListenComprehensionChallenge extends CorrectIndexChallenge {
+    prompt: string
+    tts: string
+    slowTts: string
+    question: string
+    questionTokens: QuestionToken[]
+}
+
+export interface ListenChallenge extends AbstractBaseChallenge {
+    prompt: string
+    solutionTranslation: string
+    tts: string
+    slowTts: string
+    grader: Grader
+    newWords: any[]
+    sentenceId: string
+    explanation: Explanation
+    indicatorType: string
+}
+
+export interface Explanation {
+    url: string
+    title: string
+}
+
+export interface TapClozeChallenge extends AbstractBaseChallenge {
+    correctIndices: number[]
+    displayTokens: DisplayToken[]
+    tokens: TokensEntity[]
+    newWords: any[]
+    sentenceId: string
+    explanation: Explanation
+    indicatorType: string
 }
 
 export interface SelectChallenge extends CorrectIndexChallenge {
@@ -163,6 +230,7 @@ export interface SelectOneChallenge extends CorrectIndexChallenge {
 export interface DisplayToken {
     text: string;
     isBlank: boolean;
+    damageStart?: number | null;
 }
 
 export interface TapCompleteChallenge extends AbstractBaseChallenge {
@@ -233,7 +301,7 @@ interface TaggedKcIdsEntity {
 interface TokensEntity {
     value: string;
     tts?: string | null;
-    hintTable?: HintTable | null;
+    damageStart?: number | null;
 }
 
 interface Character {
