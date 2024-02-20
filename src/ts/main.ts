@@ -78,6 +78,30 @@ function solve() {
             }
             break;
         }
+        case "listenMatch": {
+            /*
+            Explanation: Ok, this challenge is weird. It gives 4 audios and 4 words. You have to match the sound to the word. This is weird already.
+            Heres how we win it. The divs have a data-test attribute that has THE TRANSLATED WORD. Meaning that we will have a list of sounds that have
+            an attribute that has the word they represent on it. Then we sinply match from there.
+             */
+            const words = Array.from(document.querySelectorAll('button[data-test*="challenge-tap-token"]') as NodeListOf<HTMLElement>)
+            const map = new Map<string, HTMLElement[]>();
+            for (const word of words) {
+                const dataTest = word.getAttribute("data-test") as string
+                if (map.has(dataTest)) {
+                    const words = (map.get(dataTest) ?? [])
+                    words.push(word)
+                    map.set(dataTest, words)
+                } else {
+                    map.set(dataTest, [word])
+                }
+            }
+            for (const [audio, selection] of map.values()) {
+                audio.click()
+                selection.click()
+            }
+            break;
+        }
         case "partialReverseTranslate": {
             const displayTokens = (props.currentChallenge as PartialReverseTranslateChallenge).displayTokens
             let solution = ""

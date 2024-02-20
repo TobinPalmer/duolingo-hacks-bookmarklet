@@ -17,23 +17,24 @@ export interface ReactPropsOuterWrapper {
 
 export type AllChallenges =
     DialogueChallenge
-    | TranslateChallenge
-    | SelectOneChallenge
     | AssistChallenge
-    | TapCompleteChallenge
-    | ListenTapChallege
-    | ListenChallenge
     | CompleteReverseTranslationChallenge
-    | SelectChallenge
-    | PartialReverseTranslateChallenge
-    | ListenComprehensionChallenge
-    | SelectTranscriptionChallenge
-    | ListenIsolationChallenge
     | GapFillChallenge
-    | TapClozeChallenge
-    | TypeClozeChallenge
+    | ListenChallenge
+    | ListenCompleteChallenge
+    | ListenComprehensionChallenge
+    | ListenIsolationChallenge
+    | ListenTapChallege
+    | PartialReverseTranslateChallenge
     | ReadComprehensionChallenge
-    | ListenCompleteChallenge;
+    | SelectChallenge
+    | SelectOneChallenge
+    | SelectTranscriptionChallenge
+    | TapClozeChallenge
+    | TapCompleteChallenge
+    | TranslateChallenge
+    | TypeClozeChallenge
+    | ListenMatchChallenge
 
 export type DuolingoChallengeTypes =
     "dialogue"
@@ -48,6 +49,7 @@ export type DuolingoChallengeTypes =
     | "typeCloze"
     | "listenComprehension"
     | "gapFill"
+    | "listenMatch"
     | "tapCloze"
     | "partialReverseTranslate"
     | "listenIsolation"
@@ -89,6 +91,16 @@ export interface PartialReverseTranslateChallenge extends AbstractBaseChallenge 
     isSpeakerUniversal: boolean
     newWords: any[]
     worldCharacterShown: boolean
+}
+
+export interface ListenMatchChallenge extends AbstractBaseChallenge {
+    pairs: Pair[]
+}
+
+interface Pair {
+    tts: string
+    translation: string
+    learningWord: string
 }
 
 export interface ListenComprehensionChallenge extends CorrectIndexChallenge {
