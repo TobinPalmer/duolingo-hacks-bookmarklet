@@ -6,28 +6,50 @@ import {
     ListenChallenge,
     ListenComprehensionChallenge,
     ListenTapChallege,
+    MatchChallenge,
+    NameChallenge,
     PartialReverseTranslateChallenge,
     TapCompleteChallenge,
     TranslateChallenge,
     TypeClozeChallenge
 } from "./types/duolingo";
-import {sleep, tapCorrectWords, typeIntoInput, typeIntoSpan, typeIntoTextArea} from "./util";
+import {sleep, tapCorrectWords, type, typeSpan} from "./util";
+import {addLogger, log} from "./logger";
 
+addLogger();
 
 const next = document.querySelector('[data-test="player-next"]') as HTMLElement;
 const isDisabled = next.getAttribute("aria-disabled");
+let interval: NodeJS.Timeout | undefined;
 if (isDisabled === "false") {
     next.click();
 } else {
-    setInterval(solve, 100);
+    interval = setInterval(solve, 300)
 }
 
+const props = findReact(document.getElementsByClassName('_3FiYg')[0], 0);
+if (props === undefined) {
+    throw new Error("Could not find react props")
+}
+
+log(`Currently on unit ${props.path[props.path.length - 1].unitIndex}`)
+log(`Weekly XP: ${props.user.weeklyXp}`)
 
 function solve() {
+    const isDone = document.querySelector('[data-test="session-complete-slide"]');
+
+    if (isDone) {
+        log("Clearing Solve Interval")
+        clearInterval(interval ?? 0);
+    }
+
     const props = findReact(document.getElementsByClassName('_3FiYg')[0], 0);
     if (props === undefined) {
         throw new Error("Could not find react props")
     }
+
+    log(`Solving ${props?.currentChallenge.type}`)
+
     switch (props?.currentChallenge.type) {
         case "dialogue": {
             const correctIndex = (props.currentChallenge as DialogueChallenge).correctIndex;
@@ -35,7 +57,9 @@ function solve() {
             sleep(50).then(() => next.click())
             sleep(50).then(() => next.click())
             const choices = document.querySelectorAll('[data-test="challenge-choice"]') as NodeListOf<HTMLElement>;
-            choices[correctIndex].click();
+            if (correctIndex !== undefined) {
+                choices[correctIndex].click();
+            }
             break;
         }
         case "tapCloze": {
@@ -46,13 +70,31 @@ function solve() {
             }
             break;
         }
+        case "match" : {
+            const pairs = (props.currentChallenge as MatchChallenge).pairs;
+            const map = new Map<string, HTMLElement>();
+            const elems = Array.from(document.querySelectorAll('button[data-test*="challenge-tap-token"]') as NodeListOf<HTMLElement>);
+            for (const el of elems) {
+                const text = el.querySelector("[data-test]") as HTMLElement
+                map.set(text.textContent ?? "", el)
+            }
+            for (const pair of pairs) {
+                (() => {
+                    setTimeout(() => {
+                        map.get(pair.learningToken)?.click()
+                        map.get(pair.fromToken)?.click()
+                    }, 50)
+                })();
+            }
+            break;
+        }
         case "translate": {
             const correctTokens = (props.currentChallenge as TranslateChallenge).correctTokens;
             const correctSolutions = (props.currentChallenge as TranslateChallenge).correctSolutions;
             if (correctTokens) {
                 tapCorrectWords(correctTokens);
             } else if (correctSolutions) {
-                typeIntoTextArea(document.querySelector('[data-test="challenge-translate-input"]') as HTMLTextAreaElement, correctSolutions[0])
+                type(document.querySelector('[data-test="challenge-translate-input"]') as HTMLTextAreaElement, correctSolutions[0])
             }
             break;
         }
@@ -61,6 +103,11 @@ function solve() {
             tapCorrectWords(correctTokens);
             break;
         }
+        case "name": {
+            const correctSolution = (props.currentChallenge as NameChallenge).correctSolutions[0];
+            type(document.querySelector('input[data-test="challenge-text-input"]') as HTMLTextAreaElement, correctSolution);
+            break
+        }
         case "typeCloze": {
             const tokens = (props.currentChallenge as TypeClozeChallenge).displayTokens
             let i = 0;
@@ -68,10 +115,7 @@ function solve() {
             const startingTexts: string[] = (Array.from(document.querySelectorAll("span._1O_I2 span._1FEiz") as NodeListOf<HTMLElement>)).map(x => x.textContent) as string[];
             for (const token of tokens) {
                 if (token.damageStart) {
-                    alert(inputs[i] + "startingText" + startingTexts[i] + token.text)
-
-
-                    typeIntoInput(inputs[i], token.text.substring(startingTexts[i].length));
+                    type(inputs[i], token.text.substring(startingTexts[i].length));
                     i++
                     break;
                 }
@@ -113,14 +157,15 @@ function solve() {
             }
 
             const inputElm = document.querySelector('[data-test*="challenge-partialReverseTranslate"]')?.querySelector("span[contenteditable]") as HTMLElement;
-            typeIntoSpan(inputElm, solution)
+            if (inputElm === null) break;
+            typeSpan(inputElm, solution)
+            break;
         }
         case "listen": {
             const prompt = (props.currentChallenge as ListenChallenge).prompt;
             // const input = document.querySelectorAll('[data-test="challenge-text-input"]')[0] as HTMLInputElement;
             const input = document.querySelector("[data-test*='challenge'] textarea") as HTMLTextAreaElement;
-
-            typeIntoTextArea(input, prompt);
+            type(input, prompt);
             break;
         }
         case "assist":
@@ -131,7 +176,9 @@ function solve() {
         case "gapFill": {
             const correctIndex = (props.currentChallenge as GapFillChallenge).correctIndex;
             const choices = document.querySelectorAll('[data-test="challenge-choice"]') as NodeListOf<HTMLElement>;
-            choices[correctIndex].click();
+            if (correctIndex !== undefined) {
+                choices[correctIndex].click();
+            }
             break;
         }
         case "tapComplete": {
@@ -146,14 +193,16 @@ function solve() {
         case "listenComprehension": {
             const correctIndex = (props.currentChallenge as ListenComprehensionChallenge).correctIndex;
             const choices = document.querySelectorAll('[data-test="challenge-choice"]') as NodeListOf<HTMLElement>;
-            choices[correctIndex].click();
+            if (correctIndex !== undefined) {
+                choices[correctIndex].click();
+            }
             break;
         }
         case "listenComplete":
         case "completeReverseTranslation": {
             const currentlyDone = (props.currentChallenge as CompleteReverseTranslationChallenge).displayTokens
             const input = document.querySelectorAll('[data-test="challenge-text-input"]')[0] as HTMLInputElement;
-            typeIntoInput(input, currentlyDone.find(x => x.isBlank)?.text ?? "");
+            type(input, currentlyDone.find(x => x.isBlank)?.text ?? "");
             // const nativeValueSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, "value")?.set;
             // nativeValueSetter?.call(input, currentlyDone.find(x => x.isBlank)?.text);
             // const inputEvent = new Event("input", {

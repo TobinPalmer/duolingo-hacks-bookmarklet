@@ -20,43 +20,29 @@ export function tapCorrectWords(correctTokens: string[]) {
 
 export const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
-export function typeIntoInput(input: HTMLInputElement, text: string) {
-    const nativeValueSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, "value")?.set;
-    nativeValueSetter?.call(input, text);
-    const inputEvent = new Event("input", {
+function setNativeValue(element: HTMLElement, value: string, type: string) {
+    const valueSetter = Object.getOwnPropertyDescriptor(element, type)?.set;
+    const prototype = Object.getPrototypeOf(element);
+    const prototypeValueSetter = Object.getOwnPropertyDescriptor(prototype, type)?.set;
+
+    if (valueSetter && valueSetter !== prototypeValueSetter) {
+        prototypeValueSetter?.call(element, value);
+    } else {
+        valueSetter?.call(element, value);
+    }
+}
+
+export function type(input: HTMLElement, text: string, type = "value") {
+    if (!input) return;
+    setNativeValue(input, text, type);
+    input.dispatchEvent(new Event('input', {bubbles: true}));
+}
+
+export function typeSpan(input: HTMLElement, text: string) {
+    let nativeInputNodeTextSetter = Object.getOwnPropertyDescriptor(Node.prototype, "textContent")?.set;
+    nativeInputNodeTextSetter?.call(input, text)
+    let inputEvent = new Event("input", {
         bubbles: true
     });
     input.dispatchEvent(inputEvent);
-}
-
-export function typeIntoSpan(input: HTMLElement, text: string) {
-    const nativeInputNodeTextSetter = Object.getOwnPropertyDescriptor(Node.prototype, "textContent")?.set;
-    nativeInputNodeTextSetter?.call(input, text)
-    input.dispatchEvent(new Event("input", {
-        bubbles: true
-    }));
-
-}
-
-export function typeIntoTextArea(input: HTMLTextAreaElement | HTMLElement, text: string) {
-    function setNativeValue(element: HTMLElement, value: String) {
-        const valueSetter = Object.getOwnPropertyDescriptor(element, 'value')?.set;
-        const prototype = Object.getPrototypeOf(element);
-        const prototypeValueSetter = Object.getOwnPropertyDescriptor(prototype, 'value')?.set;
-
-        if (valueSetter && valueSetter !== prototypeValueSetter) {
-            prototypeValueSetter?.call(element, value);
-        } else {
-            valueSetter?.call(element, value);
-        }
-    }
-
-    setNativeValue(input, text);
-    input.dispatchEvent(new Event('input', {bubbles: true}));
-    // const nativeValueSetter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, "value")?.set;
-    // nativeValueSetter?.call(input, text);
-    // const inputEvent = new Event("input", {
-    //     bubbles: true
-    // });
-    // input.dispatchEvent(inputEvent);
 }

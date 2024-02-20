@@ -5,6 +5,8 @@ interface UnknownProperty {
 export interface ReactPropsOuterWrapper {
     history: UnknownProperty;
     location: UnknownProperty;
+    path: Path[];
+    user: { weeklyXp: number; /* Incomplete */ };
     match: UnknownProperty;
     staticContext: any | undefined;
     children: any | null;
@@ -27,7 +29,9 @@ export type AllChallenges =
     | ListenTapChallege
     | PartialReverseTranslateChallenge
     | ReadComprehensionChallenge
+    | NameChallenge
     | SelectChallenge
+    | MatchChallenge
     | SelectOneChallenge
     | SelectTranscriptionChallenge
     | TapClozeChallenge
@@ -38,23 +42,25 @@ export type AllChallenges =
 
 export type DuolingoChallengeTypes =
     "dialogue"
-    | "translate"
-    | "tapComplete"
-    | "listenTap"
-    | "select"
-    | "listen"
-    | "completeReverseTranslation"
     | "assist"
-    | "selectTranscription"
-    | "typeCloze"
-    | "listenComprehension"
+    | "completeReverseTranslation"
     | "gapFill"
-    | "listenMatch"
-    | "tapCloze"
-    | "partialReverseTranslate"
+    | "listen"
+    | "listenComplete"
+    | "listenComprehension"
     | "listenIsolation"
+    | "listenMatch"
+    | "listenTap"
+    | "match"
+    | "name"
+    | "partialReverseTranslate"
     | "readComprehension"
-    | "listenComplete";
+    | "select"
+    | "selectTranscription"
+    | "tapCloze"
+    | "tapComplete"
+    | "translate"
+    | "typeCloze"
 
 export interface AbstractBaseChallenge {
     challengeGeneratorIdentifier: ChallengeGeneratorIdentifier;
@@ -80,6 +86,21 @@ export interface TypeClozeChallenge extends AbstractBaseChallenge {
     indicatorType: string
 }
 
+export interface MatchChallenge extends AbstractBaseChallenge {
+    pairs: MatchPair[]
+    newWords: any[]
+}
+
+export interface NameChallenge extends AbstractBaseChallenge {
+    prompt: string
+    correctSolutions: string[]
+    images: any[]
+    solutionTts: string
+    grader: Grader
+    svgs: string[]
+    newWords: any[]
+}
+
 export interface PartialReverseTranslateChallenge extends AbstractBaseChallenge {
     prompt: string
     displayTokens: DisplayToken[]
@@ -101,6 +122,12 @@ interface Pair {
     tts: string
     translation: string
     learningWord: string
+}
+
+interface MatchPair {
+    learningToken: string
+    fromToken: string
+    tts: string
 }
 
 export interface ListenComprehensionChallenge extends CorrectIndexChallenge {
@@ -468,3 +495,49 @@ interface Option {
     tts: string
 }
 
+
+export interface Path {
+    unitIndex: number
+    levels: Level[]
+    guidebook: Guidebook
+    teachingObjective: string
+    cefrLevel: string
+    unitNumber: number
+}
+
+export interface Level {
+    id: string
+    state: string
+    finishedSessions: number
+    pathLevelMetadata: PathLevelMetadata
+    pathLevelClientData: PathLevelClientData
+    totalSessions: number
+    debugName: string
+    hasLevelReview: boolean
+    type: string
+    subtype: string
+    isInProgressSequence: boolean
+    dailyRefreshInfo: any
+}
+
+export interface PathLevelMetadata {
+    skillId?: string
+    crownLevelIndex?: number
+    anchorSkillId?: string
+    indexSinceAnchorSkill?: number
+    treeId?: string
+    unitIndex?: number
+}
+
+export interface PathLevelClientData {
+    skillId?: string
+    crownLevelIndex?: number
+    hardModeLevelIndex?: number
+    teachingObjective?: string
+    assignmentInfo: any
+    skillIds?: string[]
+}
+
+export interface Guidebook {
+    url: string
+}
