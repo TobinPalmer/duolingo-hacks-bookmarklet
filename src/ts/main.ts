@@ -32,10 +32,22 @@ if (props === undefined) {
     throw new Error("Could not find react props")
 }
 
-log(`Currently on unit ${props.path[props.path.length - 1].unitIndex}`)
-log(`Weekly XP: ${props.user.weeklyXp}`)
+// log(`Currently on unit ${props.path[props.path.length - 1].unitIndex}`)
+// log(`Weekly XP: ${props.user.weeklyXp}`)
 
 function solve() {
+    const skipSpeaking = document.querySelector('[data-test="player-skip"]') as HTMLElement;
+    if (skipSpeaking) {
+        skipSpeaking.click();
+    }
+
+    const next = document.querySelector('[data-test="player-next"]') as HTMLElement;
+    const isDisabled = next.getAttribute("aria-disabled");
+    log("Is Disabled: " + isDisabled)
+    if (isDisabled === "false") {
+        next.click();
+    }
+
     const isDone = document.querySelector('[data-test="session-complete-slide"]');
 
     if (isDone) {
@@ -48,7 +60,7 @@ function solve() {
         throw new Error("Could not find react props")
     }
 
-    log(`Solving ${props?.currentChallenge.type}`)
+    // log(`Solving ${props?.currentChallenge.type}`)
 
     switch (props?.currentChallenge.type) {
         case "dialogue": {
@@ -104,8 +116,27 @@ function solve() {
             break;
         }
         case "name": {
-            const correctSolution = (props.currentChallenge as NameChallenge).correctSolutions[0];
-            type(document.querySelector('input[data-test="challenge-text-input"]') as HTMLTextAreaElement, correctSolution);
+            const buttons = document.querySelectorAll('[data-test="challenge-judge-text"]')
+            if (buttons) {
+                const startingSolution = (props.currentChallenge as NameChallenge).correctSolutions[0];
+                const buttonTexts: string[] = []
+                for (const button of buttons) {
+                    buttonTexts.push(button.textContent ?? "")
+                }
+                let correctIndex = -1
+                for (let i = 0; i < buttonTexts.length; i++) {
+                    const text = buttonTexts[i]
+                    if (startingSolution.startsWith(text)) {
+                        correctIndex = i;
+                        (buttons[i] as HTMLElement).click();
+                        break;
+                    }
+                }
+                type(document.querySelector('input[data-test="challenge-text-input"]') as HTMLTextAreaElement, startingSolution.substring(buttonTexts[correctIndex].length))
+            } else {
+                const correctSolution = (props.currentChallenge as NameChallenge).correctSolutions[0];
+                type(document.querySelector('input[data-test="challenge-text-input"]') as HTMLTextAreaElement, correctSolution);
+            }
             break
         }
         case "typeCloze": {
