@@ -13,6 +13,7 @@ export interface ReactPropsOuterWrapper {
     challengeToggleState: UnknownProperty;
     correctChalleges: any[];
     course: UnknownProperty;
+    player: { isFinalLevel: boolean /* Incomplete */ };
     currentChallenge: AllChallenges
     currentCourseHistory: UnknownProperty;
 }
