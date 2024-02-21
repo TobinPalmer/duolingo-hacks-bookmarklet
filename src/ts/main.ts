@@ -25,8 +25,9 @@ let interval: NodeJS.Timeout | undefined;
 if (isDisabled === "false") {
     next.click();
 } else {
-    interval = setInterval(solve, 300)
+    interval = setInterval(solve, 250)
 }
+let levelOverCount = 0;
 
 const props = findReact(document.getElementsByClassName('_3FiYg')[0], 0);
 if (props === undefined) {
@@ -37,21 +38,20 @@ log(`Currently on unit ${props.path[props.path.length - 1].unitIndex}`)
 log(`Weekly XP: ${props.user.weeklyXp}`)
 
 function solve() {
-
-    const isDone = document.querySelector('[data-test="session-complete-slide"]');
-
-    if (isDone) {
+    if (levelOverCount > 2) {
         log("Lesson Took: " + (new Date().getTime() - startingTime) / 1000 + " seconds")
         clearInterval(interval ?? 0);
+        return;
     }
+
     const skipSpeaking = document.querySelector('[data-test="player-skip"]') as HTMLElement;
-    if (skipSpeaking) {
+
+    if (skipSpeaking && (skipSpeaking.querySelector("._1fHYG") as HTMLElement).textContent !== "Skip") {
         skipSpeaking.click();
     }
 
     const next = document.querySelector('[data-test="player-next"]') as HTMLElement;
     const isDisabled = next.getAttribute("aria-disabled");
-    // log("Is Disabled: " + isDisabled)
     if (isDisabled === "false") {
         next.click();
     }
@@ -61,7 +61,12 @@ function solve() {
         throw new Error("Could not find react props")
     }
 
-    log(`Solving ${props?.currentChallenge.type}` + isDone)
+    log(`Solving ${props?.currentChallenge.type} ${levelOverCount}`)
+    if (document.querySelector('[data-test="player-next"]')?.textContent === "Continue") {
+        levelOverCount++;
+    } else {
+        levelOverCount = 0;
+    }
 
     switch (props?.currentChallenge.type) {
         case "dialogue": {
@@ -254,6 +259,6 @@ function solve() {
 
     setTimeout(() => {
         next.click()
-    }, 100)
+    }, 5)
 }
 
