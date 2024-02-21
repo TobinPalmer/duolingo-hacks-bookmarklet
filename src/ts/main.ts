@@ -13,11 +13,12 @@ import {
     TranslateChallenge,
     TypeClozeChallenge
 } from "./types/duolingo";
-import {sleep, tapCorrectWords, type, typeSpan} from "./util";
+import {tapCorrectWords, type, typeSpan} from "./util";
 import {addLogger, log} from "./logger";
 
 addLogger();
 
+const startingTime = new Date().getTime();
 const next = document.querySelector('[data-test="player-next"]') as HTMLElement;
 const isDisabled = next.getAttribute("aria-disabled");
 let interval: NodeJS.Timeout | undefined;
@@ -32,10 +33,17 @@ if (props === undefined) {
     throw new Error("Could not find react props")
 }
 
-// log(`Currently on unit ${props.path[props.path.length - 1].unitIndex}`)
-// log(`Weekly XP: ${props.user.weeklyXp}`)
+log(`Currently on unit ${props.path[props.path.length - 1].unitIndex}`)
+log(`Weekly XP: ${props.user.weeklyXp}`)
 
 function solve() {
+
+    const isDone = document.querySelector('[data-test="session-complete-slide"]');
+
+    if (isDone) {
+        log("Lesson Took: " + (new Date().getTime() - startingTime) / 1000 + " seconds")
+        clearInterval(interval ?? 0);
+    }
     const skipSpeaking = document.querySelector('[data-test="player-skip"]') as HTMLElement;
     if (skipSpeaking) {
         skipSpeaking.click();
@@ -43,16 +51,9 @@ function solve() {
 
     const next = document.querySelector('[data-test="player-next"]') as HTMLElement;
     const isDisabled = next.getAttribute("aria-disabled");
-    log("Is Disabled: " + isDisabled)
+    // log("Is Disabled: " + isDisabled)
     if (isDisabled === "false") {
         next.click();
-    }
-
-    const isDone = document.querySelector('[data-test="session-complete-slide"]');
-
-    if (isDone) {
-        log("Clearing Solve Interval")
-        clearInterval(interval ?? 0);
     }
 
     const props = findReact(document.getElementsByClassName('_3FiYg')[0], 0);
@@ -60,14 +61,16 @@ function solve() {
         throw new Error("Could not find react props")
     }
 
-    // log(`Solving ${props?.currentChallenge.type}`)
+    log(`Solving ${props?.currentChallenge.type}` + isDone)
 
     switch (props?.currentChallenge.type) {
         case "dialogue": {
             const correctIndex = (props.currentChallenge as DialogueChallenge).correctIndex;
             const next = document.querySelector('[data-test="player-next"]') as HTMLElement;
-            sleep(50).then(() => next.click())
-            sleep(50).then(() => next.click())
+            next.click();
+            next.click();
+            // sleep(50).then(() => next.click())
+            // sleep(50).then(() => next.click())
             const choices = document.querySelectorAll('[data-test="challenge-choice"]') as NodeListOf<HTMLElement>;
             if (correctIndex !== undefined) {
                 choices[correctIndex].click();
@@ -117,7 +120,8 @@ function solve() {
         }
         case "name": {
             const buttons = document.querySelectorAll('[data-test="challenge-judge-text"]')
-            if (buttons) {
+            if (buttons.length > 0) {
+                log("Name challenge with buttons")
                 const startingSolution = (props.currentChallenge as NameChallenge).correctSolutions[0];
                 const buttonTexts: string[] = []
                 for (const button of buttons) {
@@ -134,6 +138,7 @@ function solve() {
                 }
                 type(document.querySelector('input[data-test="challenge-text-input"]') as HTMLTextAreaElement, startingSolution.substring(buttonTexts[correctIndex].length))
             } else {
+                log("Name challenge WITHOUT buttons")
                 const correctSolution = (props.currentChallenge as NameChallenge).correctSolutions[0];
                 type(document.querySelector('input[data-test="challenge-text-input"]') as HTMLTextAreaElement, correctSolution);
             }
