@@ -18,7 +18,7 @@ import {addLogger, log} from "./logger";
 
 addLogger();
 
-const startingTime = new Date().getTime();
+let startingTime = new Date().getTime();
 const next = document.querySelector('[data-test="player-next"]') as HTMLElement;
 const isDisabled = next.getAttribute("aria-disabled");
 let interval: NodeJS.Timeout | undefined;
@@ -40,7 +40,13 @@ log(`Weekly XP: ${props.user.weeklyXp}`)
 function solve() {
     if (levelOverCount > 2) {
         log("Lesson Took: " + (new Date().getTime() - startingTime) / 1000 + " seconds")
-        clearInterval(interval ?? 0);
+        const playAgain = document.querySelector('[data-test="player-practice-again"]') as HTMLElement;
+        if (playAgain) {
+            playAgain.click();
+            levelOverCount = 0;
+            startingTime = new Date().getTime();
+        }
+        // clearInterval(interval ?? 0);
         return;
     }
 
