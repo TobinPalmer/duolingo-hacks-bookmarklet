@@ -7,7 +7,8 @@ export function findReact(dom: Element): ReactPropsOuterWrapper | undefined {
     let reactProps = Object.keys(dom as HTMLElement).find((key) => key.startsWith("__reactProps$")) ?? ""
 
     const props = dom?.[reactProps as keyof Element]
-    if (isProps(props)) return props.children[0]._owner.stateNode.props
+    // @ts-ignore
+    if (isProps(props)) return props.children._owner.stateNode.props
 }
 
 function isProps(x: unknown): x is ReactPropsOuter {

@@ -29,7 +29,7 @@ if (isDisabled === "false") {
 }
 let levelOverCount = 0;
 
-const props = findReact(document.getElementsByClassName('_3FiYg')[0], 0);
+const props = findReact(document.getElementsByClassName('_3FiYg')[0]);
 if (props === undefined) {
     throw new Error("Could not find react props")
 }
@@ -56,7 +56,7 @@ function solve() {
         next.click();
     }
 
-    const props = findReact(document.getElementsByClassName('_3FiYg')[0], 0);
+    const props = findReact(document.getElementsByClassName('_3FiYg')[0]);
     if (props === undefined) {
         throw new Error("Could not find react props")
     }
@@ -103,7 +103,7 @@ function solve() {
                     setTimeout(() => {
                         map.get(pair.learningToken)?.click()
                         map.get(pair.fromToken)?.click()
-                    }, 50)
+                    }, 80)
                 })();
             }
             break;
