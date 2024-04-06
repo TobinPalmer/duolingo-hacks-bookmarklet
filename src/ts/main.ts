@@ -16,8 +16,16 @@ import {
 import {tapCorrectWords, type, typeSpan} from "./util";
 import {addLogger, log} from "./logger";
 
+const url = window.location.href;
+if (url.includes("learn")) {
+    window.location.href = "practice";
+}
+
+// _3FiYg OLD
+const mainReactElemClassName = "_3js2_";
+
 const id = setInterval(() => {
-    if (document.getElementsByClassName('_3FiYg')[0] !== undefined) {
+    if (document.getElementsByClassName(mainReactElemClassName)[0] !== undefined) {
         clearInterval(id);
         main();
     }
@@ -37,7 +45,7 @@ function main() {
     }
     let levelOverCount = 0;
 
-    const props = findReact(document.getElementsByClassName('_3FiYg')[0]);
+    const props = findReact(document.getElementsByClassName(mainReactElemClassName)[0]);
     if (props === undefined) {
         throw new Error("Could not find react props")
     }
@@ -70,7 +78,7 @@ function main() {
             next.click();
         }
 
-        const props = findReact(document.getElementsByClassName('_3FiYg')[0]);
+        const props = findReact(document.getElementsByClassName(mainReactElemClassName)[0]);
         if (props === undefined) {
             throw new Error("Could not find react props")
         }
