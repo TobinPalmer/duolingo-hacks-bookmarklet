@@ -1,18 +1,18 @@
-import type {ReactPropsOuterWrapper} from "./duolingo";
+import type { ReactPropsOuterWrapper } from './duolingo'
 
 interface ReactChildrenPropElement {
-    _owner: {
-        stateNode: {
-            props: ReactPropsOuterWrapper
-        }
+  _owner: {
+    stateNode: {
+      props: ReactPropsOuterWrapper
     }
+  }
 
-    // There are many useless props
-    [key: string]: any;
+  // There are many useless props
+  [key: string]: any
 }
 
 export interface ReactPropsOuter {
-    children: ReactChildrenPropElement[];
+  children: ReactChildrenPropElement[] | ReactChildrenPropElement
 }
 
 // declare global {
