@@ -173,9 +173,9 @@ function main() {
             buttonTexts.push(button.textContent ?? '')
           }
           let correctIndex = -1
-          for (let i = 0; i < buttonTexts.length; i++) {
+          for (let i = 0; i < buttonTexts?.length; i++) {
             const text = buttonTexts[i]
-            if (startingSolution[0].startsWith(text)) {
+            if (startingSolution.startsWith(text)) {
               correctIndex = i
               ;(buttons[i] as HTMLElement).click()
               break
@@ -183,7 +183,7 @@ function main() {
           }
           type(
             document.querySelector('input[data-test="challenge-text-input"]') as HTMLTextAreaElement,
-            startingSolution[0].substring(buttonTexts[correctIndex].length),
+            startingSolution.substring(buttonTexts[correctIndex]?.length),
           )
         } else {
           log('Name challenge WITHOUT buttons')
@@ -214,10 +214,10 @@ function main() {
       }
       case 'listenMatch': {
         /*
-                                                                                                                                                                                                                                                                                            Explanation: Ok, this challenge is weird. It gives 4 audios and 4 words. You have to match the sound to the word. This is weird already.
-                                                                                                                                                                                                                                                                                            Heres how we win it. The divs have a data-test attribute that has THE TRANSLATED WORD. Meaning that we will have a list of sounds that have
-                                                                                                                                                                                                                                                                                            an attribute that has the word they represent on it. Then we sinply match from there.
-                                                                                                                                                                                                                                                                                             */
+                                                                                                                                                                                                                                                                                                                                                                                                            Explanation: Ok, this challenge is weird. It gives 4 audios and 4 words. You have to match the sound to the word. This is weird already.
+                                                                                                                                                                                                                                                                                                                                                                                                            Heres how we win it. The divs have a data-test attribute that has THE TRANSLATED WORD. Meaning that we will have a list of sounds that have
+                                                                                                                                                                                                                                                                                                                                                                                                            an attribute that has the word they represent on it. Then we sinply match from there.
+                                                                                                                                                                                                                                                                                                                                                                                                             */
         const words = Array.from(
           document.querySelectorAll('button[data-test*="challenge-tap-token"]') as NodeListOf<HTMLElement>,
         )
